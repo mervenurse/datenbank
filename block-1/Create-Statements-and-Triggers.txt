@@ -1,0 +1,75 @@
+CREATE TABLE benutzer(
+    nickname            VARCHAR(255) NOT NULL,
+    e-mail-adresse      VARCHAR(255),
+    name                VARCHAR(255),
+    PRIMARY KEY(nickname)
+);
+CREATE TABLE artikelangebot(
+    artikelangebot-id   INTEGER NOT NULL GENERATED ALWAYS AS idENTITY,
+    artikelname         VARCHAR(255),
+    Preis               DECIMAL,
+    anzahl              INTEGER CHECK (anzahl>0 and anzahl<100)
+    beschreibungstext   VARCHAR(1024),
+    artikelbild         BLOB,
+    PRIMARY KEY(artikelangebot-id)
+);
+CREATE TABLE kaufvorgang(
+    transaktion-id      INTEGER NOT NULL GENERATED ALWAYS AS idENTITY,
+    stueckzahl          INTEGER,
+    PRIMARY KEY(transaktion-id)
+);
+CREATE TABLE lieferadresse(
+    transaktion-id      INTEGER NOT NULL,
+    stadt               VARCHAR(255),
+    strasse             VARCHAR(255),
+    plz                 INTEGER,
+    PRIMARY KEY(transaktion-id),
+    FOREIGN KEY (transaktion-id)
+		REFERENCES kaufvorgang(transaktion-id) 
+		ON UPDATE CASCADE 
+		ON DELETE CASCADE
+);
+CREATE TABLE erwirbt(
+    nickname            VARCHAR(255) NOT NULL,
+    transaktion-id      INTEGER NOT NULL,
+    artikelangebot-id   INTEGER NOT NULL,
+    FOREIGN KEY (nickname)
+		REFERENCES benutzer(nickname) 
+		ON UPDATE CASCADE 
+		ON DELETE CASCADE,
+    FOREIGN KEY (transaktion-id)
+		REFERENCES kaufvorgang(transaktion-id) 
+		ON UPDATE CASCADE 
+		ON DELETE CASCADE,
+    FOREIGN KEY (artikelangebot-id)
+		REFERENCES artikelangebot(artikelangebot-id) 
+		ON UPDATE CASCADE 
+		ON DELETE CASCADE
+    
+);
+CREATE TABLE bewertet(
+    nickname            VARCHAR(255) NOT NULL,
+    transaktion-id      INTEGER NOT NULL,
+    sternzahl           INTEGER CHECK sternzahl IN (1,2,3,4,5),
+    rezension           VARCHAR(1024),
+    FOREIGN KEY (nickname)
+		REFERENCES benutzer(nickname) 
+		ON UPDATE CASCADE 
+		ON DELETE CASCADE,
+    FOREIGN KEY (transaktion-id)
+		REFERENCES kaufvorgang(transaktion-id) 
+		ON UPDATE CASCADE 
+		ON DELETE CASCADE
+);
+CREATE TABLE wunschliste(
+    nickname            VARCHAR(255) NOT NULL,
+    artikelangebot-id   INTEGER NOT NULL,
+    FOREIGN KEY (nickname)
+		REFERENCES benutzer(nickname) 
+		ON UPDATE CASCADE 
+		ON DELETE CASCADE,
+    FOREIGN KEY (artikelangebot-id)
+		REFERENCES artikelangebot(artikelangebot-id) 
+		ON UPDATE CASCADE 
+		ON DELETE CASCADE
+);
